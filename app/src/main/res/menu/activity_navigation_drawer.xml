@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/Home"
+            android:icon="@drawable/hole_nav"
+            android:title="Home" />
+        <item
+            android:id="@+id/search_bus"
+            android:icon="@drawable/ic_search_bus"
+            android:title="Seach Bus" />
+        <item
+            android:id="@+id/notification"
+            android:icon="@drawable/ic_notification"
+            android:title="Notification" />
+        <item
+            android:icon="@drawable/time_table_icon"
+            android:id="@+id/time_table"
+            android:title="Time Table" />
+
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/sign_out"
+                android:title="Sign Out" />
+        </menu>
+    </item>
+
+</menu>
