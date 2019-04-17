@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.ProviderQueryResult;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -100,6 +101,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog.setMessage("Registering User.....");
             progressDialog.show();
 
+            firebaseAuth.fetchProvidersForEmail(email)
+                    .addOnCompleteListener(this, new OnCompleteListener<ProviderQueryResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<ProviderQueryResult> task) {
+                            boolean ischeck = !task.getResult().getProviders().isEmpty();
+
+                            if(ischeck){
+                                Toast.makeText(MainActivity.this, "Email already exist.", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+
+                            }
+                        }
+                    });
+
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -113,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
                             } else {
                                 Toast.makeText(MainActivity.this, "Could not registered successfully", Toast.LENGTH_SHORT).show();
+                                progressDialog.hide();
                             }
                         }
                     });

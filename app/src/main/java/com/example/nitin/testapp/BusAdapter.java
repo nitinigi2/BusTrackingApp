@@ -45,7 +45,11 @@ public class BusAdapter extends RecyclerView.Adapter<BusAdapter.BusviewHolder> {
             public void onClick(View v) {
               //  searchBus.setBuseNumber(busNumb);
                 Toast.makeText(v.getContext(), busNumb, Toast.LENGTH_SHORT).show();
-                Intent myIntent = new Intent(v.getContext(), BusRouteList.class);
+             //   Intent myIntent = new Intent(v.getContext(), BusRouteList.class);
+             //   myIntent.putExtra("busNumber", busNumb);
+              //  context.startActivity(myIntent);
+
+                Intent myIntent = new Intent(v.getContext(), MapsActivity.class);
                 myIntent.putExtra("busNumber", busNumb);
                 context.startActivity(myIntent);
             }

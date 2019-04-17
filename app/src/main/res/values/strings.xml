@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">TestApp</string>
+    <string name="app_name">MeNBus</string>
     <string name="title_activity_maps">Map</string>
-    <string name="enter_your_e_mail_id">E-mail</string>
+    <string name="enter_your_e_mail_id">Email</string>
     <string name="enter_password">Password</string>
     <string name="title_activity_navigation">MeNBus</string>
 
@@ -12,4 +12,5 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name ="google_maps_key">AIzaSyBt_zxl1kJiq9FfK4CLY7CgzsackHImIxc</string>
 </resources>

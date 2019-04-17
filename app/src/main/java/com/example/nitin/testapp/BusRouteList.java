@@ -99,7 +99,7 @@ public class BusRouteList extends AppCompatActivity {
 
             }
         });
-        /*
+
         requestPermission();
         client = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
@@ -112,14 +112,14 @@ public class BusRouteList extends AppCompatActivity {
                 if(location != null){
                     currentAddress = new LatLng(location.getLatitude(), location.getLatitude());
                     Log.d("cuurentAddress", ""+location.getLatitude()+" " + location.getLongitude());
-                    showlist(busNumber, location.getLatitude(), location.getLongitude());
+                    showlist(busNumber, location.getLatitude(), location.getLongitude(), time);
 
                     int time = calculateTime(location.getLatitude(), location.getLongitude(), latitude, longitude);
                     Log.d("Time", ""+time);
                 }
             }
         });
-        */
+
 
     }
 
@@ -150,6 +150,7 @@ public class BusRouteList extends AppCompatActivity {
                         Log.d("cuurentAddress", ""+location.getLatitude()+" " + location.getLongitude());
 
 
+                     //   int time = calculateTime(location.getLatitude(), location.getLongitude(), latitude, longitude);
                         int time = calculateTime(location.getLatitude(), location.getLongitude(), latitude, longitude);
                         Log.d("Time", ""+time);
                         showlist(busNumber, location.getLatitude(), location.getLongitude(), time);

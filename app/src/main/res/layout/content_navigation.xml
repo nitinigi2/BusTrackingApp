@@ -9,4 +9,5 @@
     tools:context="com.example.nitin.testapp.NavigationActivity"
     tools:showIn="@layout/app_bar_navigation">
 
+
 </RelativeLayout>

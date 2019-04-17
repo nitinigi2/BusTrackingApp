@@ -4,10 +4,7 @@
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight = "16dp"
-    android:paddingTop="16dp"
-    android:background="@color/colorPrimary"
+    android:background="#0f3b52"
     tools:context="com.example.nitin.testapp.LoginActivity">
 
     <LinearLayout
@@ -18,42 +15,56 @@
         android:orientation="vertical">
 
         <TextView
+            android:textColor="#ffff"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:gravity="center_horizontal"
             android:text="USER LOGIN"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <EditText
+            android:drawablePadding="10dp"
+            android:paddingLeft="10dp"
+            android:drawableLeft="@drawable/ic_user"
+            android:background="@drawable/edit_round"
             android:layout_margin="15dp"
             android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:inputType="textEmailAddress"
             android:hint="@string/enter_your_e_mail_id"/>
 
         <EditText
+            android:drawableLeft="@drawable/ic_password"
+            android:drawablePadding="10dp"
+            android:paddingLeft="10dp"
+            android:background="@drawable/edit_round"
             android:layout_margin="15dp"
             android:id="@+id/editTextPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:inputType="textPassword"
             android:hint="@string/enter_password"/>
 
         <Button
-            android:background="@color/colorPrimaryDark"
-            android:layout_margin="15dp"
+
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/button_round"
             android:id="@+id/buttonLogin"
             android:text="LOGIN"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="40dp" />
 
         <TextView
+            android:textColor="#ffff"
+            android:layout_marginTop="20dp"
             android:id="@+id/textViewSignup"
             android:textSize="@dimen/activity_horizontal_margin"
             android:gravity="center_horizontal"
             android:text="Not having an account? Register here"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="40dp" />
     </LinearLayout>
 
 </RelativeLayout>

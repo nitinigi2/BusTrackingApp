@@ -27,7 +27,7 @@ public class BusRoutes {
 
         String[] route8={"Ghunghat Garden(RTO)","Jain Colony","Lokmanya Nagar","Mahow Naka","Malganj Choraha","Lohar Patti","Malhar Ganj Thana","Badwali Choki","Emli Bazar Choraha","Sadar Bazar(Ram Mandir)","SVVV Campus"};
 
-        String[] route9={"Khajrana Chouraha","Royal Care Hospital","Shri Nagar Extension","Anand Bazar","Greater Kailash Hospital","Guitar Choraha","Industry House","Anoop Nagar","Apolo Hospital","Dainik Press","Vijay Nagar","SVVV Campus"};
+        String[] route9={"Khajrana Chouraha","Royal Care Hospital","Shri Nagar Extension","Anand Bazar","Greater Kailash Hospital","Guitar Choraha","Industry House","Anoop Nagar","Apolo Hospital","Dainik Press","Vijay Nagar", "Bapat Choraha", "MR 10","SVVV Campus"};
 
         String[] route10={"Tower Chouraha","Khatiwala Tank","Saifi Nagar","Manikbag Bridge Starting","Manikbag Bridge Ending","Manikbag Square Signal","Collectorat","Harsiddhi","Rajwada","Nagar Nigam Square","Lokhande Bridge","Aganiban Press","Power House","Marimata","Akhada","Banganga","Tiwari Complex","Banganga Bridge Starting","Banganga Bridge Ending","SVVV Campus"};
 

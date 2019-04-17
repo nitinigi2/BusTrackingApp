@@ -3,8 +3,13 @@ package com.example.nitin.testapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,9 +17,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -32,8 +40,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.*;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.example.nitin.testapp.R.id.map;
 
@@ -49,13 +64,22 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private Location lastLocation;
-    private Marker currentUserLocationMarker;
+    private Marker currentBusMarker;
     private static final int Request_User_Location_Code = 99;
 
     private LatLng latLng;
 
-    DatabaseReference databaseReference;
+    private EditText busno;
+    private Button searchbus;
+
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+    FirebaseDatabase database;
+    DatabaseReference myRef;
+    private Marker currentUserLocationMarker;
+    LocationManager locationManager;
+
+    private ProgressDialog progressDialog;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -75,12 +99,84 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
 
         super.onViewCreated(view, savedInstanceState);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            checkUserLocationPermission();
-        }
+        busno = (EditText) view.findViewById(R.id.edit_search);
+        searchbus = (Button) view.findViewById(R.id.button_search);
+
+        checkUserLocationPermission();
+        progressDialog = new ProgressDialog(getContext());
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
+
+        searchbus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String bus = busno.getText().toString();
+                showBus(bus);
+            }
+        });
+    }
+
+    public void showBus(final String busNo){
+        progressDialog.setMessage("Searching Bus......");
+        progressDialog.show();
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                showdata(dataSnapshot, busNo);
+                Log.d("showdata is called", " ");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+private double latitude, longitude;
+
+    private void showdata(DataSnapshot dataSnapshot, final String busNumber) {
+        ArrayList<String> busnumbers = new ArrayList<>();
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+            HashMap<String, UserInfo> maps = (HashMap<String, UserInfo>) ds.getValue();
+
+            for(Map.Entry<String, UserInfo> entry : maps.entrySet()){
+                busnumbers.add(entry.getKey());
+                Log.d("All bus from firebase", ""+busnumbers);
+            }
+            if(!busnumbers.contains(busNumber)) {
+                Toast.makeText(getContext(), "Please enter correct bus Number", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            UserInfo userinfo = new UserInfo();
+            userinfo.setLatitude(ds.child(busNumber).getValue(UserInfo.class).getLatitude());
+            userinfo.setLongitude(ds.child(busNumber).getValue(UserInfo.class).getLongitude());
+
+            latitude = userinfo.getLatitude();
+            longitude = userinfo.getLongitude();
+        }
+
+
+        progressDialog.hide();
+        if(currentBusMarker != null) currentBusMarker.remove();
+        LatLng latLng = new LatLng(latitude, longitude);
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title(busNumber);
+        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_busliveloc));
+        currentBusMarker = mMap.addMarker(markerOptions);
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(latLng)
+                .zoom(13)
+                .bearing(0)
+                .build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override
@@ -95,11 +191,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
                 .zoom(15)
                 .bearing(0)
                 .build();
-      //  mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(morena));
 
 
-        if(ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             buildApiClient();
             mMap.setMyLocationEnabled(true);
         }
@@ -108,14 +204,31 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
 
     public boolean checkUserLocationPermission(){
 
-        if(ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
+        if(ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
         {
-            if(ActivityCompat.shouldShowRequestPermissionRationale((Activity) getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION))
-            {
-                ActivityCompat.requestPermissions((Activity) getActivity().getApplicationContext(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
+            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) getContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Required Location Permission")
+                        .setMessage("You have to give this permission to access the feature")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions((Activity) getContext(),
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        Request_User_Location_Code);
+                            }
+                        })
+                        .create()
+                        .show();
             }
             else{
-                ActivityCompat.requestPermissions((Activity) getActivity().getApplicationContext(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
+                ActivityCompat.requestPermissions((Activity) getContext(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
             }
             return false;
         }
@@ -128,22 +241,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
         switch (requestCode){
             case Request_User_Location_Code:
                 if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    if(ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                    if(ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                         if(googleApiClient == null){
                             buildApiClient();
                         }
+
                         mMap.setMyLocationEnabled(true);
                     }
                 }
                 else{
-                    Toast.makeText(getActivity().getApplicationContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
                 }
                 return;
         }
     }
 
     protected synchronized void buildApiClient(){
-        googleApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
+        googleApiClient = new GoogleApiClient.Builder(getContext())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -158,6 +272,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
         if(currentUserLocationMarker != null){
             currentUserLocationMarker.remove();
         }
+
 
 
         latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -181,7 +296,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
 
-
     }
 
     @Override
@@ -191,7 +305,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,
         locationRequest.setFastestInterval(1100);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        if(ContextCompat.checkSelfPermission(getActivity().getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
 
         }

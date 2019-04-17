@@ -1,8 +1,33 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.nitin.testapp.HomeFragment">
+
+    <RelativeLayout
+        android:background="#ffff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:background="@drawable/edit_round"
+            android:hint="Bus No"
+            android:inputType="number"
+            android:id="@+id/edit_search"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_toStartOf="@+id/button_search" />
+
+        <Button
+            android:background="#ffff"
+            android:text="search"
+            android:id="@+id/button_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
 
     <!-- TODO: Update blank fragment layout -->
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,4 +43,4 @@
         map:uiZoomGestures="true"/>
 
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

@@ -74,7 +74,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if(task.isSuccessful()){
                             // start the profile activity
                             finish();
-                            startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                            startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
+                        }
+                        else{
+                            Toast.makeText(LoginActivity.this, "Either password or Email is wrong", Toast.LENGTH_SHORT).show();
+                            progressDialog.hide();
                         }
 
                     }
